@@ -14,10 +14,12 @@ import java.util.Objects;
 public class VirementServiceImpl {
 
 	private final CompteRepository repository;
+	private final NotificationService notifications;
 	private final Clock horloge;
 
 	public VirementServiceImpl(CompteRepository repository, NotificationService notifications, Clock horloge) {
 		this.repository = repository;
+		this.notifications = notifications;
 		this.horloge = horloge;
 	}
 
@@ -29,6 +31,9 @@ public class VirementServiceImpl {
 		destination.crediter(montant);
 		repository.sauvegarder(source);
 		repository.sauvegarder(destination);
+		if (montant.compareTo(new BigDecimal("10000")) > 0) {
+			notifications.alerter(source.getTitulaire(), "Virement supérieur à 10 000 € : " + montant);
+		}
 		return new Virement(numeroSource, numeroDestination, montant, LocalDate.now(horloge));
 	}
 
