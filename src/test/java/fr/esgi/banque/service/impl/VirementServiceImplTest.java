@@ -6,6 +6,7 @@ import fr.esgi.banque.business.Virement;
 import fr.esgi.banque.service.CompteIntrouvableException;
 import fr.esgi.banque.service.CompteRepository;
 import fr.esgi.banque.service.NotificationService;
+import fr.esgi.banque.service.VirementRefuseException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -161,5 +162,27 @@ class VirementServiceImplTest {
 		} else {
 			verifyNoInteractions(notifications);
 		}
+	}
+
+	@Test
+	void doitRefuserUnVirementLeDimancheSansSauvegarderLesComptes() {
+		// Arrange
+		CompteRepository repository = mock(CompteRepository.class);
+		NotificationService notifications = mock(NotificationService.class);
+		Clock horloge = Clock.fixed(Instant.parse("2026-11-08T10:00:00Z"), ZoneOffset.UTC);
+		VirementServiceImpl service = new VirementServiceImpl(repository, notifications, horloge);
+		Compte source = new Compte("FR001", "Alice", new BigDecimal("100.00"), BigDecimal.ZERO);
+		Compte destination = new Compte("FR002", "Bob", new BigDecimal("25.00"), BigDecimal.ZERO);
+		when(repository.trouver("FR001")).thenReturn(Optional.of(source));
+		when(repository.trouver("FR002")).thenReturn(Optional.of(destination));
+
+		// Act
+		Throwable exception = catchThrowable(() -> service.virer("FR001", "FR002", new BigDecimal("10.00")));
+
+		// Assert
+		assertThat(exception).isInstanceOf(VirementRefuseException.class);
+		verify(repository, never()).sauvegarder(any(Compte.class));
+		assertThat(source.getSolde()).isEqualByComparingTo("100.00");
+		assertThat(destination.getSolde()).isEqualByComparingTo("25.00");
 	}
 }
