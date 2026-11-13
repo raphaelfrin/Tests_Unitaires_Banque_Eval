@@ -102,6 +102,21 @@ class CompteTest {
 		assertThat(compte.getSolde()).isEqualByComparingTo("99.99");
 	}
 
+	@ParameterizedTest
+	@NullSource
+	@CsvSource({"0", "-0.01"})
+	void doitRefuserUnDebitNonStrictementPositif(BigDecimal montant) {
+		// Arrange
+		Compte compte = new Compte("FR001", "Alice", new BigDecimal("100.00"), new BigDecimal("200"));
+
+		// Act
+		Throwable exception = catchThrowable(() -> compte.debiter(montant));
+
+		// Assert
+		assertThat(exception).isInstanceOf(IllegalArgumentException.class);
+		assertThat(compte.getSolde()).isEqualByComparingTo("100.00");
+	}
+
 	@Test
 	void shouldIncreaseBalanceWhenCrediting() {
 		// Arrange
