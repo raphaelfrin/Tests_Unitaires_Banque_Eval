@@ -22,12 +22,7 @@ public class VirementServiceImpl {
 	}
 
 	public Virement virer(String numeroSource, String numeroDestination, BigDecimal montant) {
-		if (montant == null || montant.signum() <= 0) {
-			throw new IllegalArgumentException("Le montant doit être strictement positif");
-		}
-		if (Objects.equals(numeroSource, numeroDestination)) {
-			throw new IllegalArgumentException("Les comptes source et destination doivent être différents");
-		}
+		validerVirement(numeroSource, numeroDestination, montant);
 		Compte source = trouverCompte(numeroSource);
 		Compte destination = trouverCompte(numeroDestination);
 		source.debiter(montant);
@@ -35,6 +30,15 @@ public class VirementServiceImpl {
 		repository.sauvegarder(source);
 		repository.sauvegarder(destination);
 		return new Virement(numeroSource, numeroDestination, montant, LocalDate.now(horloge));
+	}
+
+	private void validerVirement(String numeroSource, String numeroDestination, BigDecimal montant) {
+		if (montant == null || montant.signum() <= 0) {
+			throw new IllegalArgumentException("Le montant doit être strictement positif");
+		}
+		if (Objects.equals(numeroSource, numeroDestination)) {
+			throw new IllegalArgumentException("Les comptes source et destination doivent être différents");
+		}
 	}
 
 	private Compte trouverCompte(String numero) {
