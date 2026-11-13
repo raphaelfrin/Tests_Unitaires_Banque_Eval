@@ -95,4 +95,26 @@ class CalculFraisTest {
 		// Assert
 		assertThat(frais).isEqualByComparingTo(fraisAttendus);
 	}
+
+	@ParameterizedTest
+	@CsvSource({
+			"30, 100.00, true, 7.00",
+			"25, 100.00, true, 5.00",
+			"30, 1000.00, true, 5.00",
+			"25, 1000.00, true, 5.00",
+			"30, 100.00, false, 2.00",
+			"25, 100.00, false, 0.00",
+			"30, 1000.00, false, 0.00"
+	})
+	void doitFacturerLeSupplementPourUneCartePremium(
+			int age, BigDecimal soldeMoyen, boolean cartePremium, BigDecimal fraisAttendus) {
+		// Arrange
+		CalculFrais calculFrais = new CalculFrais();
+
+		// Act
+		BigDecimal frais = calculFrais.fraisMensuels(age, soldeMoyen, cartePremium);
+
+		// Assert
+		assertThat(frais).isEqualByComparingTo(fraisAttendus);
+	}
 }
