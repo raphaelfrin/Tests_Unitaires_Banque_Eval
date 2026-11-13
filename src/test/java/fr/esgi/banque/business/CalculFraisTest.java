@@ -42,4 +42,20 @@ class CalculFraisTest {
 		// Assert
 		assertThat(exception).isNull();
 	}
+
+	@ParameterizedTest
+	@CsvSource({
+			"27, 999.99",
+			"30, 0"
+	})
+	void doitFacturerDeuxEurosDeFraisDeTenue(int age, BigDecimal soldeMoyen) {
+		// Arrange
+		CalculFrais calculFrais = new CalculFrais();
+
+		// Act
+		BigDecimal frais = calculFrais.fraisMensuels(age, soldeMoyen, false);
+
+		// Assert
+		assertThat(frais).isEqualByComparingTo("2.00");
+	}
 }
