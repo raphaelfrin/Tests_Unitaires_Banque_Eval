@@ -13,6 +13,8 @@ import java.util.Objects;
 
 public class VirementServiceImpl {
 
+	private static final BigDecimal SEUIL_ALERTE = new BigDecimal("10000");
+
 	private final CompteRepository repository;
 	private final NotificationService notifications;
 	private final Clock horloge;
@@ -31,7 +33,7 @@ public class VirementServiceImpl {
 		destination.crediter(montant);
 		repository.sauvegarder(source);
 		repository.sauvegarder(destination);
-		if (montant.compareTo(new BigDecimal("10000")) > 0) {
+		if (montant.compareTo(SEUIL_ALERTE) > 0) {
 			notifications.alerter(source.getTitulaire(), "Virement supérieur à 10 000 € : " + montant);
 		}
 		return new Virement(numeroSource, numeroDestination, montant, LocalDate.now(horloge));
