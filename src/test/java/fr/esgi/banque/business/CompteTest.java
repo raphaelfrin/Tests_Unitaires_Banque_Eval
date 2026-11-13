@@ -1,16 +1,39 @@
 package fr.esgi.banque.business;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Test d'exemple fourni pour vérifier que le projet est bien configuré.
  * À compléter (partie A).
  */
 class CompteTest {
+
+	@ParameterizedTest
+	@CsvSource({
+			", Alice",
+			"'', Alice",
+			"FR001,",
+			"FR001, ''"
+	})
+	void doitRefuserUnNumeroOuUnTitulaireManquant(String numero, String titulaire) {
+		// Arrange
+		BigDecimal soldeInitial = new BigDecimal("100.00");
+		BigDecimal decouvertAutorise = new BigDecimal("200");
+
+		// Act
+		Throwable exception = catchThrowable(
+				() -> new Compte(numero, titulaire, soldeInitial, decouvertAutorise));
+
+		// Assert
+		assertThat(exception).isInstanceOf(IllegalArgumentException.class);
+	}
 
 	@Test
 	void shouldIncreaseBalanceWhenCrediting() {
