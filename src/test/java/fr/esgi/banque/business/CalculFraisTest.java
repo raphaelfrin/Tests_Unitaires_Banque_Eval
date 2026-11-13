@@ -77,4 +77,22 @@ class CalculFraisTest {
 		// Assert
 		assertThat(frais).isEqualByComparingTo(fraisAttendus);
 	}
+
+	@ParameterizedTest
+	@CsvSource({
+			"999.99, 2.00",
+			"1000.00, 0.00",
+			"1000.01, 0.00"
+	})
+	void doitAppliquerGratuiteSelonLeSoldeMoyen(BigDecimal soldeMoyen, BigDecimal fraisAttendus) {
+		// Arrange
+		CalculFrais calculFrais = new CalculFrais();
+		int age = 30;
+
+		// Act
+		BigDecimal frais = calculFrais.fraisMensuels(age, soldeMoyen, false);
+
+		// Assert
+		assertThat(frais).isEqualByComparingTo(fraisAttendus);
+	}
 }

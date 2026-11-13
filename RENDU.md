@@ -20,4 +20,4 @@
 
   - **Règle F3 :** les frais de tenue sont offerts à 26 ans alors qu'ils devraient être facturés.
   La condition inclut 26 ans dans la gratuité au lieu de s'arrêter avant.
-  **Test :** `doitAppliquerLaGratuiteSelonLAge` (cas `26`).
+  **Test :** `doitAppliquerGratuiteSelonLAge` (cas `26`).
