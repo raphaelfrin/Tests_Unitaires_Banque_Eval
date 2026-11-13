@@ -66,7 +66,7 @@ class CalculFraisTest {
 			"26, 2.00",
 			"27, 2.00"
 	})
-	void doitAppliquerLaGratuiteSelonLAge(int age, BigDecimal fraisAttendus) {
+	void doitAppliquerGratuiteSelonLAge(int age, BigDecimal fraisAttendus) {
 		// Arrange
 		CalculFrais calculFrais = new CalculFrais();
 		BigDecimal soldeMoyen = new BigDecimal("100.00");

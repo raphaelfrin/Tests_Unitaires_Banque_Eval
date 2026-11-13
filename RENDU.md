@@ -17,3 +17,7 @@
   - **Règle C6 :** `estVide` renvoie `false` pour un solde de `0.00` ou `0.000`.
   La comparaison tient compte du nombre de décimales au lieu de comparer seulement la valeur.
   **Test :** `doitIndiquerSiLeSoldeEstNul`.
+
+  - **Règle F3 :** les frais de tenue sont offerts à 26 ans alors qu'ils devraient être facturés.
+  La condition inclut 26 ans dans la gratuité au lieu de s'arrêter avant.
+  **Test :** `doitAppliquerLaGratuiteSelonLAge` (cas `26`).
