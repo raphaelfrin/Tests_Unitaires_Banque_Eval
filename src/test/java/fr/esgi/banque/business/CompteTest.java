@@ -35,6 +35,26 @@ class CompteTest {
 		assertThat(exception).isInstanceOf(IllegalArgumentException.class);
 	}
 
+	@ParameterizedTest
+	@CsvSource({
+			", 0",
+			"0,",
+			"0, -0.01"
+	})
+	void doitRefuserUnSoldeOuUnDecouvertInvalide(BigDecimal soldeInitial, BigDecimal decouvertAutorise) {
+		// Arrange
+		String numero = "FR001";
+		String titulaire = "Alice";
+
+		// Act
+		Throwable exception = catchThrowable(
+				() -> new Compte(numero, titulaire, soldeInitial, decouvertAutorise));
+
+		// Assert
+		assertThat(exception).isInstanceOf(IllegalArgumentException.class);
+	}
+
+
 	@Test
 	void shouldIncreaseBalanceWhenCrediting() {
 		// Arrange
