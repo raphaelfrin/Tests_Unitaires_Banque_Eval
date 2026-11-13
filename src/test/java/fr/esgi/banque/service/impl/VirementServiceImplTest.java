@@ -1,5 +1,7 @@
 package fr.esgi.banque.service.impl;
 
+import fr.esgi.banque.business.Compte;
+import fr.esgi.banque.service.CompteIntrouvableException;
 import fr.esgi.banque.service.CompteRepository;
 import fr.esgi.banque.service.NotificationService;
 import org.junit.jupiter.api.Test;
@@ -11,10 +13,12 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class VirementServiceImplTest {
 
@@ -51,5 +55,25 @@ class VirementServiceImplTest {
 
 		// Assert
 		assertThat(exception).isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@ParameterizedTest
+	@CsvSource({"false, true", "true, false"})
+	void doitRefuserUnVirementSiUnCompteEstIntrouvable(boolean sourceExiste, boolean destinationExiste) {
+		// Arrange
+		CompteRepository repository = mock(CompteRepository.class);
+		NotificationService notifications = mock(NotificationService.class);
+		Clock horloge = Clock.fixed(Instant.parse("2026-11-09T10:00:00Z"), ZoneOffset.UTC);
+		VirementServiceImpl service = new VirementServiceImpl(repository, notifications, horloge);
+		Compte source = new Compte("FR001", "Alice", new BigDecimal("100.00"), BigDecimal.ZERO);
+		Compte destination = new Compte("FR002", "Bob", BigDecimal.ZERO, BigDecimal.ZERO);
+		when(repository.trouver("FR001")).thenReturn(sourceExiste ? Optional.of(source) : Optional.empty());
+		when(repository.trouver("FR002")).thenReturn(destinationExiste ? Optional.of(destination) : Optional.empty());
+
+		// Act
+		Throwable exception = catchThrowable(() -> service.virer("FR001", "FR002", new BigDecimal("10.00")));
+
+		// Assert
+		assertThat(exception).isInstanceOf(CompteIntrouvableException.class);
 	}
 }
