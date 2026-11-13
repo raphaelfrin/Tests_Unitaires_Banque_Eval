@@ -131,6 +131,22 @@ class CompteTest {
 		assertThat(compte.getSolde()).isEqualByComparingTo("100.00");
 	}
 
+	@ParameterizedTest
+	@CsvSource({
+			"299.99, -199.99",
+			"300.00, -200.00"
+	})
+	void doitAccepterUnDebitJusquaLaLimiteDuDecouvert(BigDecimal montant, BigDecimal soldeAttendu) {
+		// Arrange
+		Compte compte = new Compte("FR001", "Alice", new BigDecimal("100.00"), new BigDecimal("200"));
+
+		// Act
+		compte.debiter(montant);
+
+		// Assert
+		assertThat(compte.getSolde()).isEqualByComparingTo(soldeAttendu);
+	}
+
 	@Test
 	void shouldIncreaseBalanceWhenCrediting() {
 		// Arrange
