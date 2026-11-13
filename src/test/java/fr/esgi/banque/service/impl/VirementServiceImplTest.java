@@ -21,9 +21,12 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class VirementServiceImplTest {
@@ -130,5 +133,33 @@ class VirementServiceImplTest {
 		verify(repository, never()).sauvegarder(any(Compte.class));
 		assertThat(source.getSolde()).isEqualByComparingTo("100.00");
 		assertThat(destination.getSolde()).isEqualByComparingTo("25.00");
+	}
+
+	@ParameterizedTest
+	@CsvSource({
+			"9999.99, false",
+			"10000.00, false",
+			"10000.01, true"
+	})
+	void doitAlerterPourUnVirementSuperieurADixMilleEuros(BigDecimal montant, boolean alerteAttendue) {
+		// Arrange
+		CompteRepository repository = mock(CompteRepository.class);
+		NotificationService notifications = mock(NotificationService.class);
+		Clock horloge = Clock.fixed(Instant.parse("2026-11-09T10:00:00Z"), ZoneOffset.UTC);
+		VirementServiceImpl service = new VirementServiceImpl(repository, notifications, horloge);
+		Compte source = new Compte("FR001", "Alice", new BigDecimal("20000.00"), BigDecimal.ZERO);
+		Compte destination = new Compte("FR002", "Bob", BigDecimal.ZERO, BigDecimal.ZERO);
+		when(repository.trouver("FR001")).thenReturn(Optional.of(source));
+		when(repository.trouver("FR002")).thenReturn(Optional.of(destination));
+
+		// Act
+		service.virer("FR001", "FR002", montant);
+
+		// Assert
+		if (alerteAttendue) {
+			verify(notifications).alerter(eq("Alice"), anyString());
+		} else {
+			verifyNoInteractions(notifications);
+		}
 	}
 }
