@@ -25,3 +25,7 @@
   - **Règle F4 :** les frais de tenue sont facturés pour un solde moyen de `1000.00`.
   La condition offre les frais seulement au-dessus de 1 000 €, au lieu d'inclure ce seuil.
   **Test :** `doitAppliquerGratuiteSelonLeSoldeMoyen` (cas `1000.00`).
+
+  - **Règle F5 :** le supplément de la carte premium n'est pas facturé quand les frais de tenue sont offerts.
+  La méthode renvoie zéro avant d'ajouter le supplément.
+  **Test :** `doitFacturerLeSupplementPourUneCartePremium`.
