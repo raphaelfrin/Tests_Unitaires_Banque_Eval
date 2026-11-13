@@ -3,6 +3,7 @@ package fr.esgi.banque.business;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullSource;
 
 import java.math.BigDecimal;
 
@@ -71,6 +72,21 @@ class CompteTest {
 		// Assert
 		assertThat(compte.getSolde()).isEqualByComparingTo(soldeInitial);
 		assertThat(compte.getDecouvertAutorise()).isEqualByComparingTo(decouvertAutorise);
+	}
+
+	@ParameterizedTest
+	@NullSource
+	@CsvSource({"0", "-0.01"})
+	void doitRefuserUnCreditNonStrictementPositif(BigDecimal montant) {
+		// Arrange
+		Compte compte = new Compte("FR001", "Alice", new BigDecimal("100.00"), new BigDecimal("200"));
+
+		// Act
+		Throwable exception = catchThrowable(() -> compte.crediter(montant));
+
+		// Assert
+		assertThat(exception).isInstanceOf(IllegalArgumentException.class);
+		assertThat(compte.getSolde()).isEqualByComparingTo("100.00");
 	}
 
 	@Test
