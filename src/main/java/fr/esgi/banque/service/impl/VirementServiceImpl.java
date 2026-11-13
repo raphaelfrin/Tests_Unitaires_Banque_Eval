@@ -5,9 +5,11 @@ import fr.esgi.banque.business.Virement;
 import fr.esgi.banque.service.CompteIntrouvableException;
 import fr.esgi.banque.service.CompteRepository;
 import fr.esgi.banque.service.NotificationService;
+import fr.esgi.banque.service.VirementRefuseException;
 
 import java.math.BigDecimal;
 import java.time.Clock;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -26,6 +28,10 @@ public class VirementServiceImpl {
 	}
 
 	public Virement virer(String numeroSource, String numeroDestination, BigDecimal montant) {
+		LocalDate date = LocalDate.now(horloge);
+		if (date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+			throw new VirementRefuseException("Les virements sont refusés le dimanche");
+		}
 		validerVirement(numeroSource, numeroDestination, montant);
 		Compte source = trouverCompte(numeroSource);
 		Compte destination = trouverCompte(numeroDestination);
@@ -36,7 +42,7 @@ public class VirementServiceImpl {
 		if (montant.compareTo(SEUIL_ALERTE) > 0) {
 			notifications.alerter(source.getTitulaire(), "Virement supérieur à 10 000 € : " + montant);
 		}
-		return new Virement(numeroSource, numeroDestination, montant, LocalDate.now(horloge));
+		return new Virement(numeroSource, numeroDestination, montant, date);
 	}
 
 	private void validerVirement(String numeroSource, String numeroDestination, BigDecimal montant) {
