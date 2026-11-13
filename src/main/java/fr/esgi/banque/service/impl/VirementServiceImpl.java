@@ -29,10 +29,7 @@ public class VirementServiceImpl {
 
 	public Virement virer(String numeroSource, String numeroDestination, BigDecimal montant) {
 		LocalDate date = LocalDate.now(horloge);
-		if (date.getDayOfWeek() == DayOfWeek.SUNDAY) {
-			throw new VirementRefuseException("Les virements sont refusés le dimanche");
-		}
-		validerVirement(numeroSource, numeroDestination, montant);
+		validerVirement(numeroSource, numeroDestination, montant, date);
 		Compte source = trouverCompte(numeroSource);
 		Compte destination = trouverCompte(numeroDestination);
 		source.debiter(montant);
@@ -45,7 +42,10 @@ public class VirementServiceImpl {
 		return new Virement(numeroSource, numeroDestination, montant, date);
 	}
 
-	private void validerVirement(String numeroSource, String numeroDestination, BigDecimal montant) {
+	private void validerVirement(String numeroSource, String numeroDestination, BigDecimal montant, LocalDate date) {
+		if (date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+			throw new VirementRefuseException("Les virements sont refusés le dimanche");
+		}
 		if (montant == null || montant.signum() <= 0) {
 			throw new IllegalArgumentException("Le montant doit être strictement positif");
 		}
