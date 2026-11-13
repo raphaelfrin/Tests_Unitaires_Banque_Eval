@@ -147,6 +147,25 @@ class CompteTest {
 		assertThat(compte.getSolde()).isEqualByComparingTo(soldeAttendu);
 	}
 
+	@ParameterizedTest
+	@CsvSource({
+			"0, true",
+			"0.00, true",
+			"0.000, true",
+			"0.01, false",
+			"-0.01, false"
+	})
+	void doitIndiquerSiLeSoldeEstNul(BigDecimal soldeInitial, boolean resultatAttendu) {
+		// Arrange
+		Compte compte = new Compte("FR001", "Alice", soldeInitial, new BigDecimal("200"));
+
+		// Act
+		boolean resultat = compte.estVide();
+
+		// Assert
+		assertThat(resultat).isEqualTo(resultatAttendu);
+	}
+
 	@Test
 	void shouldIncreaseBalanceWhenCrediting() {
 		// Arrange
