@@ -8,14 +8,17 @@ import fr.esgi.banque.service.NotificationService;
 
 import java.math.BigDecimal;
 import java.time.Clock;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class VirementServiceImpl {
 
 	private final CompteRepository repository;
+	private final Clock horloge;
 
 	public VirementServiceImpl(CompteRepository repository, NotificationService notifications, Clock horloge) {
 		this.repository = repository;
+		this.horloge = horloge;
 	}
 
 	public Virement virer(String numeroSource, String numeroDestination, BigDecimal montant) {
@@ -25,9 +28,13 @@ public class VirementServiceImpl {
 		if (Objects.equals(numeroSource, numeroDestination)) {
 			throw new IllegalArgumentException("Les comptes source et destination doivent être différents");
 		}
-		trouverCompte(numeroSource);
-		trouverCompte(numeroDestination);
-		throw new UnsupportedOperationException("Le virement n'est pas encore implémenté");
+		Compte source = trouverCompte(numeroSource);
+		Compte destination = trouverCompte(numeroDestination);
+		source.debiter(montant);
+		destination.crediter(montant);
+		repository.sauvegarder(source);
+		repository.sauvegarder(destination);
+		return new Virement(numeroSource, numeroDestination, montant, LocalDate.now(horloge));
 	}
 
 	private Compte trouverCompte(String numero) {
