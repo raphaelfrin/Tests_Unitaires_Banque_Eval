@@ -21,3 +21,7 @@
   - **Règle F3 :** les frais de tenue sont offerts à 26 ans alors qu'ils devraient être facturés.
   La condition inclut 26 ans dans la gratuité au lieu de s'arrêter avant.
   **Test :** `doitAppliquerGratuiteSelonLAge` (cas `26`).
+
+  - **Règle F4 :** les frais de tenue sont facturés pour un solde moyen de `1000.00`.
+  La condition offre les frais seulement au-dessus de 1 000 €, au lieu d'inclure ce seuil.
+  **Test :** `doitAppliquerGratuiteSelonLeSoldeMoyen` (cas `1000.00`).
