@@ -13,3 +13,7 @@
 - **Règle C5 :** `debiter` refuse un débit qui atteint exactement la limite du découvert.
   La condition rejette aussi l'égalité avec cette limite.
   **Test :** `doitAccepterUnDebitJusquaLaLimiteDuDecouvert` (cas `300.00`).
+
+  - **Règle C6 :** `estVide` renvoie `false` pour un solde de `0.00` ou `0.000`.
+  La comparaison tient compte du nombre de décimales au lieu de comparer seulement la valeur.
+  **Test :** `doitIndiquerSiLeSoldeEstNul`.
