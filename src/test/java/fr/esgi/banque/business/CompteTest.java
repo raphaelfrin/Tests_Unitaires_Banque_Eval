@@ -90,6 +90,19 @@ class CompteTest {
 	}
 
 	@Test
+	void doitAccepterUnDebitStrictementPositif() {
+		// Arrange
+		Compte compte = new Compte("FR001", "Alice", new BigDecimal("100.00"), new BigDecimal("200"));
+		BigDecimal montant = new BigDecimal("0.01");
+
+		// Act
+		compte.debiter(montant);
+
+		// Assert
+		assertThat(compte.getSolde()).isEqualByComparingTo("99.99");
+	}
+
+	@Test
 	void shouldIncreaseBalanceWhenCrediting() {
 		// Arrange
 		Compte compte = new Compte("FR001", "Alice", new BigDecimal("100.00"), new BigDecimal("200"));
