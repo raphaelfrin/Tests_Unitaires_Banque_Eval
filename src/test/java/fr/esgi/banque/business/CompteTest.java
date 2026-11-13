@@ -166,6 +166,25 @@ class CompteTest {
 		assertThat(resultat).isEqualTo(resultatAttendu);
 	}
 
+	@ParameterizedTest
+	@CsvSource({
+			"-0.01, true",
+			"-100.00, true",
+			"0, false",
+			"0.00, false",
+			"0.01, false"
+	})
+	void doitIndiquerSiLeCompteEstADecouvert(BigDecimal soldeInitial, boolean resultatAttendu) {
+		// Arrange
+		Compte compte = new Compte("FR001", "Alice", soldeInitial, new BigDecimal("200"));
+
+		// Act
+		boolean resultat = compte.estADecouvert();
+
+		// Assert
+		assertThat(resultat).isEqualTo(resultatAttendu);
+	}
+
 	@Test
 	void shouldIncreaseBalanceWhenCrediting() {
 		// Arrange
