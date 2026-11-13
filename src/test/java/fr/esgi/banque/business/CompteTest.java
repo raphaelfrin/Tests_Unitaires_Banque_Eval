@@ -54,6 +54,24 @@ class CompteTest {
 		assertThat(exception).isInstanceOf(IllegalArgumentException.class);
 	}
 
+		@ParameterizedTest
+	@CsvSource({
+			"0, 0",
+			"0, 0.01",
+			"-0.01, 0"
+	})
+	void doitAccepterUnSoldeEtUnDecouvertValides(BigDecimal soldeInitial, BigDecimal decouvertAutorise) {
+		// Arrange
+		String numero = "FR001";
+		String titulaire = "Alice";
+
+		// Act
+		Compte compte = new Compte(numero, titulaire, soldeInitial, decouvertAutorise);
+
+		// Assert
+		assertThat(compte.getSolde()).isEqualByComparingTo(soldeInitial);
+		assertThat(compte.getDecouvertAutorise()).isEqualByComparingTo(decouvertAutorise);
+	}
 
 	@Test
 	void shouldIncreaseBalanceWhenCrediting() {
